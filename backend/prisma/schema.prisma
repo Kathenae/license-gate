@@ -47,6 +47,7 @@ model License {
 
   name  String
   notes String @db.Text
+  grants String? @db.Text
 
   ipLimit        Int?
   licenseScope   String?

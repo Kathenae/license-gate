@@ -14,6 +14,8 @@ type VerificationResultStatus = Prisma.LogCreateInput["result"];
 
 export interface VerificationResult {
   result: VerificationResultStatus;
+  grants?: string;
+  offlineToken?: string;
   signedChallenge?: string;
 }
 
@@ -28,6 +30,29 @@ async function signChallenge(
 
   const key = new NodeRSA(rsaPrivateKey, "pkcs8-private");
   return key.sign(challenge, "base64");
+}
+
+async function createOfflineToken(licenseKey: string, grants: string, rsaPrivateKey: string) {
+  if (!rsaPrivateKey) {
+    // TODO: Properly propagate this error to the user
+    throw new Error("User has no RSA public key");
+  }
+
+  // (1 hour)
+  const expiresAt = Math.floor(Date.now() / 1000) + 3600;
+  const payload = JSON.stringify({
+    'license_key': licenseKey,
+    'grants': grants,
+    'token_valid_until': expiresAt,
+  })
+
+  const key = new NodeRSA(rsaPrivateKey, 'pkcs8-private');
+  key.setOptions({
+    signingScheme: 'pkcs1-sha256'
+  });
+
+  const signature = key.sign(payload, "base64");
+  return Buffer.from(payload).toString("base64") + "." + signature;
 }
 
 async function getIpCount(
@@ -184,11 +209,12 @@ export async function verifyLicense(
 
   // Sign challenge
   let signedChallenge: string | undefined = undefined;
+  let offlineToken: string | undefined = undefined;
   if (options.challenge) {
-    signedChallenge = await signChallenge(
-      options.challenge,
-      (license as LicenseWithRsaKey).user.rsaPrivateKey
-    );
+    let rsaPrivateKey = (license as LicenseWithRsaKey).user.rsaPrivateKey
+    signedChallenge = await signChallenge(options.challenge, rsaPrivateKey);
+    offlineToken = await createOfflineToken(license.licenseKey, license.grants ?? '', rsaPrivateKey)
+    console.log(offlineToken)
   }
 
   await Promise.all(backgroundPromises);
@@ -197,8 +223,17 @@ export async function verifyLicense(
     console.log("Time to log, sign and decrement: ", Date.now() - time);
   }
 
+  // features the license grants
+  let grants: string| undefined = undefined;
+  if(license.grants) {
+    grants = license.grants
+  }
+
+
   return {
     result: "VALID",
+    grants,
+    offlineToken,
     signedChallenge,
   };
 }

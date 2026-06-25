@@ -63,6 +63,12 @@ interface ValidationResponse {
   result: ValidationResult;
 
   /**
+   * string represent grants this license provides
+   */
+  grants?: string;
+  offlineToken?: string;
+
+  /**
    * The challenge signed by the server. Only present if a challenge was provided in the request.
    * @example "23fa25/7dd..."
    */
@@ -116,6 +122,7 @@ export class LicenseVerifyController extends Controller {
     {
       valid: true,
       result: "VALID",
+      offlineToken: "<payload>.<signature>",
       signedChallenge: "23fa25/7dd...",
     },
     "License is valid (signed challenge)"
@@ -244,6 +251,8 @@ async function processLicenseVerification(
   return {
     valid: verificationResult.result === "VALID",
     result: verificationResult.result,
+    grants: verificationResult.grants,
+    offlineToken: verificationResult.offlineToken,
     signedChallenge: verificationResult.signedChallenge,
   };
 }

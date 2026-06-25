@@ -5,7 +5,6 @@ export const licenseCreateSchema = z.object({
   notes: z.string().max(15000),
 
   active: z.boolean(),
-
   ipLimit: z.number().int().nullish(),
   licenseScope: z.string().nullish(),
   expirationDate: z.date().nullish(),
@@ -18,6 +17,7 @@ export const licenseCreateSchema = z.object({
     .nullish(),
 
   licenseKey: z.string().min(1).max(100).optional(),
+  grants: z.string().nullish(),
 });
 
 export type LicenseCreateInput = z.infer<typeof licenseCreateSchema>;
