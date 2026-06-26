@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
+	import { generateUniqueLicenseKey } from '$lib/utils/licenseKey'
 	import Button from '../../../../lib/components/basics/Button.svelte'
 	import PageTitle from '../../../../lib/components/basics/PageTitle.svelte'
 	import LicenseEditor from '../../../../lib/components/editors/license-editor/LicenseEditor.svelte'
@@ -22,7 +23,7 @@
 		replenishInterval: null,
 
 		// UUIDv4
-		licenseKey: self.crypto.randomUUID(),
+		licenseKey: generateUniqueLicenseKey(),
 	}
 
 	let loadingCreate = false
