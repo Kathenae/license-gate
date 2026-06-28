@@ -12,12 +12,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 20s
   api:
     build:
       context: ./backend
@@ -25,8 +19,7 @@ services:
     command: >
       sh -c "sleep 30 && npm run prisma-up && npm run prisma-gen && npm run start"
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
       DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOSTNAME}:${MYSQL_PORT}/${MYSQL_DATABASE}"
       NODE_ENV: production
