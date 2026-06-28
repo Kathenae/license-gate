@@ -11,6 +11,7 @@
 			<th>Time</th>
 			<th>License Key</th>
 			<th>Name</th>
+			<th>IP</th>
 			<th>Result</th>
 			<th>Metadata</th>
 		</tr>
@@ -19,6 +20,7 @@
 				<td>{log.timestamp.toLocaleDateString()}</td>
 				<td>{log.license.licenseKey}</td>
 				<td>{log.license.name}</td>
+				<td>{log.ip}</td>
 				<td>
 					<Chip color={log.result == 'VALID' ? 'green-500' : 'red-500'}>
 						{log.result}
