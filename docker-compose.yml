@@ -25,6 +25,7 @@ services:
       NODE_ENV: production
       HEX_USER_ID_OFFSET: 0
       PORT: 3000
+      TRUST_PROXY: true
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USERNAME: ${SMTP_USERNAME}

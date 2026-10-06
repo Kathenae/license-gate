@@ -220,7 +220,8 @@ export class LicenseVerifyController extends Controller {
 }
 
 function getIpFromRequest(req: express.Request): string {
-  return (req.headers["cf-connecting-ip"] as string | undefined) || req.ip;
+  console.log(req.headers)
+  return (req.headers["cf-connecting-ip"] as string | undefined) || (req.headers["x-forwarded-for"] as string | undefined) || req.ip;
 }
 
 async function processLicenseVerification(

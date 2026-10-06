@@ -38,8 +38,8 @@ async function createOfflineToken(licenseKey: string, grants: string, rsaPrivate
     throw new Error("User has no RSA public key");
   }
 
-  // (1 hour)
-  const expiresAt = Math.floor(Date.now() / 1000) + 3600;
+  // (3 days)
+  const expiresAt = Math.floor(Date.now() / 1000) + 3 * 24 * 60 * 60;
   const payload = JSON.stringify({
     'license_key': licenseKey,
     'grants': grants,
